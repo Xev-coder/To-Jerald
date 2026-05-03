@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Letter to Jerald</title>
+<style>
+:root {
+    --bg: #080808;
+    --paper: #f2f0e9; 
+    --paper-mid: #e3dcc8;
+    --paper-dark: #b5ad96;
+    --u: 1vmin; 
+    --texture: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    --noise: url('https://www.transparenttextures.com/patterns/pinstriped-suit.png');
+    --ease-settle: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --env-w: calc(52 * var(--u));
+    --max-w: 95vw;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', serif;
+    overflow: hidden;
+    cursor: pointer;
+    perspective: 2000px;
+}
+
+/* Subtle underlying grid */
+body::before {
+    content: "";
+    position: absolute;
+    width: 200%; height: 200%;
+    background-image: radial-gradient(#ffffff05 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: floatBg 30s linear infinite;
+    z-index: 0;
+}
+
+@keyframes floatBg {
+    from { transform: translate(-25%, -25%) rotate(0deg); }
+    to { transform: translate(-10%, -10%) rotate(5deg); }
+}
+
+.safe-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: clamp(300px, 100%, 1400px);
+    max-width: var(--max-w);
+    z-index: 5;
+}
+
+.envelope-box {
+    position: relative;
+    width: var(--env-w);
+    height: calc(36 * var(--u));
+    z-index: 10;
+    transition: transform 1s var(--ease-settle);
+    transform-style: preserve-3d;
+}
+
+.envelope-base {
+    position: absolute;
+    inset: 0;
+    background: var(--paper-mid);
+    background-image: var(--texture);
+    box-shadow: 0 30px 70px rgba(0,0,0,0.8);
+    z-index: 5;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 60%;
+    background: var(--paper-mid);
+    background-image: var(--texture);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    z-index: 30;
+    transform-origin: top;
+    transition: transform 0.8s ease 0.2s;
+    filter: brightness(1.05);
+}
+
+.front-pocket {
+    position: absolute;
+    inset: 0;
+    z-index: 20; 
+    background: var(--paper-mid);
+    background-image: var(--texture);
+    clip-path: polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%);
+}
+
+.recipient-name {
+    position: absolute;
+    bottom: calc(4 * var(--u));
+    right: calc(5 * var(--u));
+    font-family: 'Brush Script MT', cursive;
+    font-size: calc(3.5 * var(--u));
+    color: rgba(60, 45, 20, 0.6);
+    transform: rotate(-2deg);
+    z-index: 60;
+    transition: opacity 0.5s ease;
+}
+
+.seal {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: calc(9 * var(--u));
+    height: calc(9 * var(--u));
+    background: #8b1a1a;
+    background-image: radial-gradient(circle at 30% 30%, #b32d2d, #630a0a);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 40;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: all 0.4s var(--ease-settle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.seal::after {
+    content: "J";
+    color: rgba(255,215,0,0.4);
+    font-size: calc(5 * var(--u));
+}
+
+.letter {
+    position: absolute;
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(var(--env-w) - 10px);
+    height: calc(30 * var(--u));
+    background: var(--paper);
+    background-image: 
+        repeating-linear-gradient(rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 2.5rem),
+        var(--noise),
+        var(--texture);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transition: 
+        left 1s var(--ease-settle), 
+        width 1s var(--ease-settle), 
+        height 1s var(--ease-settle), 
+        opacity 0.8s ease,
+        transform 0.5s ease-out;
+    filter: sepia(0.1) contrast(1.05);
+    pointer-events: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.letter::-webkit-scrollbar { width: 5px; }
+.letter::-webkit-scrollbar-track { background: transparent; }
+.letter::-webkit-scrollbar-thumb { background: rgba(139, 26, 26, 0.2); border-radius: 10px; }
+
+.active .letter {
+    left: 65%; 
+    width: clamp(320px, 42vw, 550px);
+    height: 75vh;
+    opacity: 1;
+    z-index: 50;
+    padding: calc(5 * var(--u));
+    pointer-events: all;
+    transform: translate(-50%, -50%) rotate(1deg);
+}
+
+.typewriter-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+.active .typewriter-text {
+    animation: typing 7s steps(300, end) forwards 1s;
+    max-height: 0; 
+}
+
+@keyframes typing {
+    from { max-height: 0; }
+    to { max-height: 2000px; }
+}
+
+.text h2 { 
+    font-family: 'Courier New', Courier, monospace; 
+    font-size: 1.3rem; 
+    color: #5c4a0a; 
+    margin-bottom: 15px; 
+}
+
+.signature { 
+    margin-top: 25px; 
+    opacity: 0; 
+    transition: 0.8s ease 8s; 
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    padding-top: 15px;
+}
+.active .signature { opacity: 1; }
+
+.ps-note {
+    margin-top: 15px;
+    font-family: 'Brush Script MT', cursive;
+    color: #2b4b7a;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 1s ease 9.5s;
+}
+.active .ps-note { opacity: 1; }
+
+.bouquet-pop {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: calc(45 * var(--u));
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    transition: all 1s var(--ease-settle) 0.3s;
+}
+
+.active .bouquet-pop {
+    opacity: 1;
+    width: calc(65 * var(--u));
+    transform: translate(-115%, -50%) rotate(-6deg);
+}
+
+.active .flap { transform: rotateX(180deg); z-index: 5; }
+.active .seal { opacity: 0; transform: translate(-50%, -200%) scale(0); }
+.active .recipient-name { opacity: 0; }
+
+.visualizer {
+    position: fixed;
+    bottom: 40px; left: 20px;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 40px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 100;
+}
+.active .visualizer { opacity: 1; }
+
+.bar { width: 6px; background: #ffffff44; border-radius: 2px; height: 5px; transition: height 0.05s ease; }
+
+.audio-status {
+    position: fixed;
+    bottom: 20px; left: 20px;
+    color: #ffffff44;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0;
+    z-index: 100;
+}
+.active .audio-status { opacity: 1; }
+
+#particleCanvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 2; }
+
+.hint { position: absolute; bottom: 4vh; color: #888; font-size: 12px; letter-spacing: 5px; text-transform: uppercase; transition: 0.5s; }
+.active .hint { opacity: 0; }
+
+@media (max-width: 1024px) {
+    .active .letter { left: 50%; width: 90vw; height: 70vh; transform: translate(-50%, -50%) rotate(0deg); }
+    .active .bouquet-pop { transform: translate(-50%, -125%) scale(0.6); }
+}
+</style>
+</head>
+<body onclick="toggleEnvelope()">
+
+<canvas id="particleCanvas"></canvas>
+
+<div class="safe-zone">
+    <div class="envelope-box">
+        <div class="envelope-base">
+            <div class="flap"></div>
+            <div class="front-pocket"></div>
+            <div class="recipient-name">Jerald Loreto</div>
+            <div class="seal"></div>
+        </div>
+    </div>
+
+    <div class="bouquet-pop">
+        <img src="a95836a9-53c6-415e-8963-9f6692572c3e-removebg-preview (1).png" alt="Sunflower Bouquet" style="width:100%; filter: drop-shadow(15px 15px 35px rgba(0,0,0,0.7));">
+    </div>
+
+    <div class="letter">
+        <div class="text">
+            <h2>To Jerald Loreto,</h2>
+            <div class="typewriter-text">
+                Helloo! These past few weeks with you have honestly been life-changing for me. I’ve become more mindful of the choices I make, and I find myself wanting to be better. Nagpapapogi pa nga ako para lang sa’yo kahit ang insecure kong tao HDASHDAH.<br><br>
+                
+                And every time I get to look at you, kahit saglit lang, ayun… kinikilig na naman ako HAHAHA. Umaabot pa sa point na nanununtok ako sa kilig, tapos papagalitan pa ako ng friends ko.<br><br>
+                
+                I just want to say that you’re the best thing that’s happened to me so far. I never thought I could be this in love with someone. The way you handle things with me makes me want to cherish you more and give you the best of what I can.<br><br>
+                
+                And if ever may mga times na naparamdam ko na hindi kita na-treat nang tama, I’m really sorry. All I ever wanted was to give you peace of mind and happiness, in the best way I know how.<br><br>
+                
+                I just really want to cherish every little moment I get to interact with you, even if it’s just for a short time, kasi you know, acads HAHAHA. Ikaw ba naman ang the most hardworking and pinaka-talino na ChE I know, yieee.<br><br>
+                
+                But ayun nga, Jerald… thank you for making me feel happy and appreciated. Thank you for letting me love you the best way I can, hindi siya perfect, I always let you down at times, but I'm striving to be better, more than you think you deserve, because for me, that’s exactly what you deserve.<br><br>
+                
+                I’ll keep choosing you and cherishing you… until the day na ayaw mo na sa’kin—SHADHSAHDSH (wag naman sana noh).
+            </div>
+            
+            <div class="signature">
+                <p>Sincerely yours,</p>
+                <p style="font-weight: bold; font-size: 1.1rem; color: #8b1a1a; margin-top: 5px;">Kevin from Komsai</p>
+            </div>
+
+            <div class="ps-note">P.S. Good luck sa acads, my favorite ChE!</div>
+        </div>
+    </div>
+    <div class="hint">Click to reveal</div>
+</div>
+
+<div class="visualizer">
+    <div class="bar"></div><div class="bar :active"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+</div>
+<div class="audio-status">Playing: Coldplay - Sparks</div>
+
+<audio id="bgMusic" loop>
+    <source src="Coldplay - Sparks - Somber Sounds.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    const audio = document.getElementById('bgMusic');
+    const bars = document.querySelectorAll('.bar');
+    const letter = document.querySelector('.letter');
+    const typewriter = document.querySelector('.typewriter-text');
+    
+    let particles = [];
+    let mouse = { x: null, y: null };
+    let audioContext, analyser, dataArray, source;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = e.x;
+        mouse.y = e.y;
+        
+        // Parallel 3D Letter Tilt
+        if (document.body.classList.contains('active') && window.innerWidth > 1024) {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
+            letter.style.transform = `translate(-50%, -50%) rotateY(${xAxis}deg) rotateX(${yAxis}deg) rotate(1deg)`;
+        }
+    });
+    resize();
+
+    class Particle {
+        constructor() { this.reset(); }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedX = Math.random() * 0.3 - 0.15;
+            this.speedY = Math.random() * 0.3 - 0.15;
+            this.opacity = Math.random() * 0.5 + 0.1;
+            this.pulse = Math.random() * 0.02;
+            this.angle = Math.random() * Math.PI * 2;
+            this.isDiamond = Math.random() > 0.8;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            this.angle += this.pulse;
+            this.currentOpacity = this.opacity + Math.sin(this.angle) * 0.2;
+
+            if (mouse.x && mouse.y) {
+                let dx = this.x - mouse.x;
+                let dy = this.y - mouse.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 150) {
+                    this.x += dx / 100;
+                    this.y += dy / 100;
+                }
+            }
+
+            if (this.x > canvas.width) this.x = 0;
+            if (this.x < 0) this.x = canvas.width;
+            if (this.y > canvas.height) this.y = 0;
+            if (this.y < 0) this.y = canvas.height;
+        }
+        draw() {
+            ctx.fillStyle = `rgba(255, 230, 150, ${this.currentOpacity})`;
+            ctx.shadowBlur = this.size * 2;
+            ctx.shadowColor = "rgba(255, 200, 100, 0.5)";
+            
+            if (this.isDiamond) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(Math.PI / 4);
+                ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+                ctx.restore();
+            } else {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    function initAudio() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            source = audioContext.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            analyser.fftSize = 64;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            renderVisualizer();
+        }
+    }
+
+    function renderVisualizer() {
+        requestAnimationFrame(renderVisualizer);
+        analyser.getByteFrequencyData(dataArray);
+        bars.forEach((bar, index) => {
+            const val = dataArray[index * 2];
+            const height = (val / 255) * 50 + 5;
+            bar.style.height = `${height}px`;
+        });
+    }
+    
+    function toggleEnvelope() {
+        const isActive = document.body.classList.toggle('active');
+        if (isActive) {
+            initAudio();
+            if (audioContext.state === 'suspended') audioContext.resume();
+            audio.play().catch(e => console.log("Audio Error"));
+            typewriter.style.animation = 'none';
+            typewriter.offsetHeight; 
+            typewriter.style.animation = null;
+        } else {
+            audio.pause();
+            audio.currentTime = 0;
+            letter.style.transform = `translate(-50%, -50%)`;
+        }
+    }
+</script>
+
+</body>
+</html>
